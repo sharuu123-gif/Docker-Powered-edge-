@@ -1,0 +1,28 @@
+version: '3.8'
+
+# ==============================================================================
+# Docker Compose Specification for Edge Application Deployment
+# Project: Containerizing an Edge Application with Docker
+# ==============================================================================
+
+services:
+  edge-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: edge-computing-app:latest
+    container_name: edge-app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DOCKER_CONTAINER=true
+      - EDGE_DEVICE_NAME=edge-app
+      - TEMPERATURE_THRESHOLD=35.0
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:5000/api/status')\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
